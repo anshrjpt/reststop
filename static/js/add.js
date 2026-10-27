@@ -24,6 +24,21 @@
   }).addTo(map);
   map.on("click", (e) => pin.setLatLng(e.latlng));
 
+  RS.attachSearch(document.getElementById("add-search"), {
+    getBias: () => {
+      const ll = pin.getLatLng();
+      return [ll.lat, ll.lng];
+    },
+    onSelect: (r) => {
+      pin.setLatLng([r.lat, r.lng]);
+      map.setView([r.lat, r.lng], 18);
+      // A named shop/toilet/etc. is probably the place being added.
+      const nameInput = document.querySelector('#add-form [name="name"]');
+      if (r.is_poi && !nameInput.value.trim()) nameInput.value = r.name.slice(0, 120);
+      RS.toast(RS.t("pin_moved"));
+    },
+  });
+
   document.getElementById("use-location").addEventListener("click", () => {
     if (!window.isSecureContext) return RS.toast(RS.t("loc_insecure"), 6000);
     if (!navigator.geolocation) return;

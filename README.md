@@ -55,6 +55,7 @@ It's seeded with real public toilets and water points from OpenStreetMap, so it'
 | | Feature | Details |
 |---|---|---|
 | 🗺️ | **Nearby map** | Places near the rider's live location, nearest first |
+| 📍 | **Location search** | Search any area, landmark or address with suggestions as you type, then see or add places there |
 | 🔍 | **Smart filters** | Toilet, water, charging, shade, women-safe, rider-friendly, open now |
 | ✅ | **Rider verification** | "Verified by 12 riders, last checked 2 h ago" |
 | ⚑ | **Problem reports** | Dirty, unsafe, wrong location, not allowed in |
@@ -163,6 +164,7 @@ Open the printed `https://…trycloudflare.com` link on your phone.
 | `POST` | `/api/places` | Add a place (multipart form, optional `photo` up to 5 MB) |
 | `POST` | `/api/places/<id>/verify` | `{ "user_id", "status": "works" \| "closed" \| "denied" }` |
 | `POST` | `/api/places/<id>/report` | `{ "user_id", "reason": "dirty" \| "unsafe" \| "wrong_location" \| "denied_access" \| "other" }` |
+| `GET` | `/api/geocode?q=&lat=&lng=` | Location search (Photon, falling back to Nominatim), biased toward `lat`/`lng` |
 | `GET` | `/api/stats` | Totals for the impact dashboard |
 | `GET` | `/api/config` | Public Realtime configuration |
 

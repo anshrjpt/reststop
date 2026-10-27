@@ -39,6 +39,9 @@
   let pendingFocus = focusId;
   let loadSeq = 0;
   let loading = false;
+  let searchLatLng = null; // set while a searched location is shown
+  let searchMarker = null;
+  let searchBox = null;
 
   // ---------------- DOM helpers ----------------
 
@@ -148,7 +151,9 @@
     list.replaceChildren();
 
     const items = Array.from(placesById.values());
-    if (userLatLng) items.sort((a, b) => distanceTo(a) - distanceTo(b));
+    // Nearest to the searched spot when there is one, otherwise to the rider.
+    const origin = searchLatLng || userLatLng;
+    if (origin) items.sort((a, b) => map.distance(origin, [a.lat, a.lng]) - map.distance(origin, [b.lat, b.lng]));
     order = items.map((p) => p.id);
 
     items.slice(0, MAX_LIST_ITEMS).forEach((p) => {
@@ -452,6 +457,8 @@
   }
 
   document.getElementById("locate-btn").addEventListener("click", () => {
+    clearSearch();
+    if (searchBox) searchBox.clear();
     RS.toast(RS.t("loc_finding"));
     locate(true);
   });
@@ -463,10 +470,73 @@
     window.open("https://wa.me/?text=" + encodeURIComponent(RS.t("share_msg", { url })), "_blank", "noopener");
   });
 
-  // Pass the rider's position (or map centre) to the Add page so the pin starts nearby.
+  function addPageUrl(ll) {
+    return "/add.html?lat=" + ll.lat.toFixed(6) + "&lng=" + ll.lng.toFixed(6);
+  }
+
+  // Start the Add page's pin at the searched spot, else the rider, else the map centre.
   document.getElementById("add-link").addEventListener("click", (e) => {
-    const c = userLatLng || map.getCenter();
-    e.currentTarget.href = "/add.html?lat=" + c.lat.toFixed(6) + "&lng=" + c.lng.toFixed(6);
+    e.currentTarget.href = addPageUrl(searchLatLng || userLatLng || map.getCenter());
+  });
+
+  // ---------------- Location search ----------------
+
+  function clearSearch() {
+    searchLatLng = null;
+    if (searchMarker) {
+      map.removeLayer(searchMarker);
+      searchMarker = null;
+    }
+    renderList();
+  }
+
+  function showSearchResult(r) {
+    if (openPlaceId) closeDetail();
+    clearSearch();
+    searchLatLng = L.latLng(r.lat, r.lng);
+
+    const popup = el("div", "search-popup");
+    popup.appendChild(el("strong", null, r.name));
+    if (r.address) popup.appendChild(el("span", null, r.address));
+    const add = el("a", "btn btn-primary btn-block");
+    add.href = addPageUrl(searchLatLng);
+    add.appendChild(icon("plus"));
+    add.appendChild(el("span", null, RS.t("add_here")));
+    popup.appendChild(add);
+
+    searchMarker = L.marker(searchLatLng, {
+      icon: L.divIcon({
+        className: "pin-wrap",
+        html: '<div class="pin pin-search"><svg class="i"><use href="/icons.svg#search"/></svg></div>',
+        iconSize: [36, 44],
+        iconAnchor: [18, 44],
+        popupAnchor: [0, -40],
+      }),
+      zIndexOffset: 1500,
+    })
+      .bindPopup(popup, {
+        closeButton: false,
+        minWidth: 220,
+        maxWidth: 260,
+        // Keep the popup clear of the floating header/search (top) and sheet (bottom).
+        autoPanPaddingTopLeft: L.point(16, window.innerWidth < 900 ? 200 : 24),
+        autoPanPaddingBottomRight: L.point(16, 100),
+      })
+      .addTo(map);
+
+    // No animation: opening the popup mid-animation places it wrongly.
+    map.setView(searchLatLng, 16, { animate: false }); // moveend reloads places around it
+    setExpanded(false);
+    searchMarker.openPopup();
+  }
+
+  searchBox = RS.attachSearch(document.getElementById("map-search"), {
+    getBias: () => {
+      const c = userLatLng || map.getCenter();
+      return [c.lat, c.lng];
+    },
+    onSelect: showSearchResult,
+    onClear: clearSearch,
   });
 
   // ---------------- Voice search ----------------

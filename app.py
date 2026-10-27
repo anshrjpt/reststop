@@ -11,6 +11,7 @@ from collections import defaultdict, deque
 from datetime import datetime, timezone
 from typing import Optional
 
+import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
 from supabase import Client, create_client
@@ -159,6 +160,7 @@ class RateLimiter:
 
 add_limiter = RateLimiter(limit=15, window_s=3600)
 action_limiter = RateLimiter(limit=60, window_s=3600)
+geocode_limiter = RateLimiter(limit=60, window_s=60)
 
 
 def client_key(user_id: str) -> str:
@@ -348,6 +350,113 @@ def report_place(place_id: int):
         {"place_id": place_id, "user_id": user_id, "reason": reason, "note": note}
     ).execute()
     return jsonify(ok=True), 201
+
+
+# ------------------------------------------------------------------
+# Location search
+# Photon (OSM-based, allows search-as-you-type); Nominatim as fallback.
+# Proxied so we can send a proper User-Agent and cache repeat queries.
+# ------------------------------------------------------------------
+
+GEOCODE_HEADERS = {"User-Agent": "RestStop/1.0 (hackathon project; https://github.com/anshrjpt/reststop)"}
+GEOCODE_CACHE: dict = {}
+GEOCODE_CACHE_MAX = 500
+
+
+def _join_unique(parts, skip=None):
+    out = []
+    for p in parts:
+        if p and p != skip and p not in out:
+            out.append(p)
+    return ", ".join(out)
+
+
+def photon_search(q: str, lat: Optional[float], lng: Optional[float]) -> list:
+    params = {"q": q, "limit": 6}
+    if lat is not None and lng is not None:
+        params.update(lat=lat, lon=lng)
+    resp = requests.get("https://photon.komoot.io/api/", params=params, headers=GEOCODE_HEADERS, timeout=6)
+    resp.raise_for_status()
+    results = []
+    for f in resp.json().get("features", []):
+        coords = (f.get("geometry") or {}).get("coordinates") or []
+        if len(coords) != 2:
+            continue
+        p = f.get("properties", {})
+        street = " ".join(x for x in (p.get("housenumber"), p.get("street")) if x)
+        name = p.get("name") or street or p.get("city") or p.get("state")
+        if not name:
+            continue
+        results.append({
+            "name": name,
+            "address": _join_unique(
+                [street, p.get("locality"), p.get("district"), p.get("city"), p.get("state"), p.get("country")],
+                skip=name,
+            ),
+            "lat": coords[1],
+            "lng": coords[0],
+            # A named point of interest (shop, toilet, station...) rather than a street or area.
+            "is_poi": bool(p.get("name")) and p.get("osm_key") not in ("place", "highway", "boundary"),
+        })
+    return results
+
+
+def nominatim_search(q: str) -> list:
+    params = {"q": q, "format": "jsonv2", "limit": 6, "countrycodes": "in", "addressdetails": 0}
+    resp = requests.get(
+        "https://nominatim.openstreetmap.org/search", params=params, headers=GEOCODE_HEADERS, timeout=6
+    )
+    resp.raise_for_status()
+    results = []
+    for r in resp.json():
+        display = r.get("display_name", "")
+        name = r.get("name") or display.split(",")[0]
+        results.append({
+            "name": name,
+            "address": _join_unique([s.strip() for s in display.split(",")], skip=name),
+            "lat": float(r["lat"]),
+            "lng": float(r["lon"]),
+            "is_poi": r.get("category") not in ("place", "highway", "boundary"),
+        })
+    return results
+
+
+@app.get("/api/geocode")
+def geocode():
+    q = " ".join((request.args.get("q") or "").split())
+    if len(q) < 2:
+        return jsonify(results=[])
+    if len(q) > 120:
+        raise BadRequest("Search text is too long")
+    lat = request.args.get("lat")
+    lng = request.args.get("lng")
+    lat = parse_float(lat, "lat", -90, 90) if lat else None
+    lng = parse_float(lng, "lng", -180, 180) if lng else None
+
+    # Round the bias so nearby users share cache entries.
+    key = (q.lower(), round(lat, 1) if lat is not None else None, round(lng, 1) if lng is not None else None)
+    if key in GEOCODE_CACHE:
+        return jsonify(results=GEOCODE_CACHE[key])
+
+    if not geocode_limiter.allow(request.remote_addr or "?"):
+        return jsonify(error="Too many searches. Wait a moment."), 429
+
+    results = []
+    try:
+        results = photon_search(q, lat, lng)
+    except (requests.RequestException, ValueError) as err:
+        app.logger.warning("Photon failed: %s", err)
+    if not results:
+        try:
+            results = nominatim_search(q)
+        except (requests.RequestException, ValueError) as err:
+            app.logger.warning("Nominatim failed: %s", err)
+            return jsonify(error="Search is unavailable right now. Try again."), 502
+
+    if len(GEOCODE_CACHE) >= GEOCODE_CACHE_MAX:
+        GEOCODE_CACHE.pop(next(iter(GEOCODE_CACHE)))
+    GEOCODE_CACHE[key] = results
+    return jsonify(results=results)
 
 
 @app.get("/api/stats")

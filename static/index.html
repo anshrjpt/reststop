@@ -33,6 +33,14 @@
         </div>
       </header>
 
+      <div class="search" id="map-search" role="search">
+        <svg class="i search-icon" aria-hidden="true"><use href="/icons.svg#search"/></svg>
+        <input type="search" autocomplete="off" enterkeyhint="search" aria-expanded="false" aria-controls="map-search-results"
+               data-i18n-ph="search_ph" placeholder="Search an area, landmark or address" aria-label="Search location">
+        <button class="search-clear" type="button" data-i18n-title="clear" hidden><svg class="i"><use href="/icons.svg#x"/></svg></button>
+        <ul class="search-results" id="map-search-results" role="listbox" hidden></ul>
+      </div>
+
       <nav class="chips" aria-label="Filters">
         <button class="chip" data-filter="toilet" aria-pressed="false"><svg class="i"><use href="/icons.svg#wc"/></svg><span data-i18n="f_toilet">Toilet</span></button>
         <button class="chip" data-filter="water" aria-pressed="false"><svg class="i"><use href="/icons.svg#drop"/></svg><span data-i18n="f_water">Water</span></button>
@@ -81,6 +89,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/js/common.js"></script>
+  <script src="/js/search.js"></script>
   <script src="/js/map.js"></script>
 </body>
 </html>

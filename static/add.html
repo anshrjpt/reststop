@@ -40,6 +40,13 @@
             <p data-i18n="pin_hint">Tap the map or drag the pin to the exact spot</p>
           </div>
         </div>
+        <div class="search search-inline" id="add-search" role="search">
+          <svg class="i search-icon" aria-hidden="true"><use href="/icons.svg#search"/></svg>
+          <input type="search" autocomplete="off" enterkeyhint="search" aria-expanded="false" aria-controls="add-search-results"
+                 data-i18n-ph="search_ph_add" placeholder="Search the address or shop name" aria-label="Search location">
+          <button class="search-clear" type="button" data-i18n-title="clear" hidden><svg class="i"><use href="/icons.svg#x"/></svg></button>
+          <ul class="search-results" id="add-search-results" role="listbox" hidden></ul>
+        </div>
         <div id="pick-map" class="pick-map"></div>
         <button type="button" id="use-location" class="btn btn-ghost btn-block">
           <svg class="i"><use href="/icons.svg#locate"/></svg><span data-i18n="use_my_location">Use my location</span>
@@ -122,6 +129,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/js/common.js"></script>
+  <script src="/js/search.js"></script>
   <script src="/js/add.js"></script>
 </body>
 </html>
