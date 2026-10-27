@@ -18,7 +18,8 @@ from werkzeug.exceptions import HTTPException
 
 load_dotenv()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
+# Accept the URL with or without the /rest/v1 suffix people often copy from the dashboard.
+SUPABASE_URL = re.sub(r"(/rest/v1)?/*$", "", os.getenv("SUPABASE_URL", "").strip())
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY", "").strip()
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "").strip()
 PORT = int(os.getenv("PORT", "8000"))
