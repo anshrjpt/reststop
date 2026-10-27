@@ -140,9 +140,6 @@ pip install -r requirements.txt
    PORT=8000
    ```
 
-> [!WARNING]
-> The `service_role` key has full access to the database. Keep it out of git, chats and screenshots. `.env` is already in `.gitignore`.
-
 ### 3. Import places from OpenStreetMap
 
 ```bash
