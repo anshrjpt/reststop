@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Add a place · RestStop</title>
+  <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="doc-page">
+  <header class="page-header">
+    <div class="page-header-inner">
+      <a href="/" class="text-btn"><svg class="i"><use href="/icons.svg#arrow-left"/></svg><span data-i18n="back">Back to map</span></a>
+      <a href="/" class="logo logo-sm" aria-label="RestStop home">
+        <span class="logo-mark"><svg class="i"><use href="/icons.svg#pin"/></svg></span>
+        <strong data-i18n="app_name">RestStop</strong>
+      </a>
+      <button id="lang-toggle" class="pill-btn">हिंदी</button>
+    </div>
+  </header>
+
+  <main class="container narrow">
+    <div class="page-intro">
+      <h1 data-i18n="add_title">Add a place</h1>
+      <p data-i18n="add_intro">Know a spot where riders can use a toilet, fill water or rest? Add it in under a minute.</p>
+    </div>
+
+    <form id="add-form" class="form" novalidate>
+      <section class="card">
+        <div class="card-head">
+          <span class="step">1</span>
+          <div>
+            <h2 data-i18n="step_location">Location</h2>
+            <p data-i18n="pin_hint">Tap the map or drag the pin to the exact spot</p>
+          </div>
+        </div>
+        <div id="pick-map" class="pick-map"></div>
+        <button type="button" id="use-location" class="btn btn-ghost btn-block">
+          <svg class="i"><use href="/icons.svg#locate"/></svg><span data-i18n="use_my_location">Use my location</span>
+        </button>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <span class="step">2</span>
+          <div><h2 data-i18n="step_details">Details</h2></div>
+        </div>
+        <label class="field">
+          <span class="label" data-i18n="place_name">Place name</span>
+          <input name="name" maxlength="120" required data-i18n-ph="place_name_ph" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="label" data-i18n="category">Type</span>
+          <select name="category">
+            <option value="shop" data-i18n="c_shop">Shop</option>
+            <option value="fuel" data-i18n="c_fuel">Petrol pump</option>
+            <option value="public" data-i18n="c_public">Public</option>
+            <option value="restaurant" data-i18n="c_restaurant">Restaurant / dhaba</option>
+            <option value="other" data-i18n="c_other">Other</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <span class="step">3</span>
+          <div>
+            <h2 data-i18n="facilities">Facilities</h2>
+            <p data-i18n="facilities_hint">Select everything riders can use here</p>
+          </div>
+        </div>
+        <div class="toggle-grid">
+          <label class="toggle"><input type="checkbox" name="has_toilet" value="1"><span><svg class="i"><use href="/icons.svg#wc"/></svg><b data-i18n="f_toilet">Toilet</b></span></label>
+          <label class="toggle"><input type="checkbox" name="has_water" value="1"><span><svg class="i"><use href="/icons.svg#drop"/></svg><b data-i18n="f_water">Water</b></span></label>
+          <label class="toggle"><input type="checkbox" name="has_charging" value="1"><span><svg class="i"><use href="/icons.svg#zap"/></svg><b data-i18n="f_charging">Charging</b></span></label>
+          <label class="toggle"><input type="checkbox" name="has_shade" value="1"><span><svg class="i"><use href="/icons.svg#tree"/></svg><b data-i18n="f_shade">Shade</b></span></label>
+          <label class="toggle toggle-span"><input type="checkbox" name="women_safe" value="1"><span><svg class="i"><use href="/icons.svg#shield"/></svg><b data-i18n="f_women_safe">Women-safe</b></span></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <span class="step">4</span>
+          <div><h2><span data-i18n="step_more">More info</span> <small data-i18n="optional">(optional)</small></h2></div>
+        </div>
+        <div class="field">
+          <span class="label" data-i18n="hours">Opening hours</span>
+          <div class="time-row">
+            <label><span class="sublabel" data-i18n="opens">Opens</span><input type="time" name="open_time"></label>
+            <label><span class="sublabel" data-i18n="closes">Closes</span><input type="time" name="close_time"></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="label" data-i18n="photo">Photo</span>
+          <label class="upload">
+            <input type="file" name="photo" accept="image/*" capture="environment">
+            <img id="photo-preview" class="upload-preview" alt="" hidden>
+            <span id="upload-empty" class="upload-empty">
+              <svg class="i"><use href="/icons.svg#camera"/></svg>
+              <span data-i18n="photo_cta">Take or choose a photo</span>
+            </span>
+          </label>
+        </div>
+        <label class="toggle toggle-owner">
+          <input type="checkbox" name="rider_friendly" value="1">
+          <span><svg class="i"><use href="/icons.svg#store"/></svg><b data-i18n="owner">I own this shop and riders are welcome</b></span>
+        </label>
+      </section>
+
+      <p id="form-error" class="form-error" role="alert" hidden></p>
+      <div class="form-actions">
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg" data-i18n="submit">Add place</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/add.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RestStop — Toilets, water &amp; rest for riders</title>
+  <meta name="description" content="A crowdsourced map of toilets, drinking water, charging and shade for delivery riders.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="app-page">
+  <div class="app">
+    <aside class="panel" aria-label="RestStop">
+      <header class="panel-header">
+        <a href="/" class="logo" aria-label="RestStop home">
+          <span class="logo-mark"><svg class="i"><use href="/icons.svg#pin"/></svg></span>
+          <span class="logo-text">
+            <strong data-i18n="app_name">RestStop</strong>
+            <small data-i18n="tagline">Toilets, water &amp; rest for riders</small>
+          </span>
+        </a>
+        <div class="header-actions">
+          <button id="voice-btn" class="icon-btn" data-i18n-title="voice" hidden><svg class="i"><use href="/icons.svg#mic"/></svg></button>
+          <a href="/dashboard.html" class="icon-btn" data-i18n-title="impact"><svg class="i"><use href="/icons.svg#chart"/></svg></a>
+          <button id="lang-toggle" class="pill-btn">हिंदी</button>
+        </div>
+      </header>
+
+      <nav class="chips" aria-label="Filters">
+        <button class="chip" data-filter="toilet" aria-pressed="false"><svg class="i"><use href="/icons.svg#wc"/></svg><span data-i18n="f_toilet">Toilet</span></button>
+        <button class="chip" data-filter="water" aria-pressed="false"><svg class="i"><use href="/icons.svg#drop"/></svg><span data-i18n="f_water">Water</span></button>
+        <button class="chip" data-filter="charging" aria-pressed="false"><svg class="i"><use href="/icons.svg#zap"/></svg><span data-i18n="f_charging">Charging</span></button>
+        <button class="chip" data-filter="shade" aria-pressed="false"><svg class="i"><use href="/icons.svg#tree"/></svg><span data-i18n="f_shade">Shade</span></button>
+        <button class="chip" data-filter="women_safe" aria-pressed="false"><svg class="i"><use href="/icons.svg#shield"/></svg><span data-i18n="f_women_safe">Women-safe</span></button>
+        <button class="chip" data-filter="rider_friendly" aria-pressed="false"><svg class="i"><use href="/icons.svg#star"/></svg><span data-i18n="f_rider_friendly">Rider-friendly</span></button>
+        <button class="chip" data-filter="open_now" aria-pressed="false"><svg class="i"><use href="/icons.svg#clock"/></svg><span data-i18n="f_open_now">Open now</span></button>
+      </nav>
+
+      <section id="sheet" class="sheet" aria-live="polite">
+        <button id="sheet-handle" class="sheet-handle" aria-expanded="false">
+          <span class="grabber" aria-hidden="true"></span>
+          <span id="results-summary" class="results-summary">…</span>
+          <svg class="i chevron" aria-hidden="true"><use href="/icons.svg#chevron-up"/></svg>
+        </button>
+
+        <div id="list-view" class="list-view">
+          <ul id="place-list" class="place-list"></ul>
+          <div id="list-empty" class="empty" hidden>
+            <svg class="i empty-icon"><use href="/icons.svg#pin"/></svg>
+            <p data-i18n="no_places">No places here yet. Add one!</p>
+          </div>
+        </div>
+
+        <div id="detail-view" class="detail-view" hidden>
+          <button id="detail-back" class="text-btn"><svg class="i"><use href="/icons.svg#arrow-left"/></svg><span data-i18n="all_places">All places</span></button>
+          <div id="detail-body"></div>
+        </div>
+      </section>
+
+      <footer class="panel-footer">
+        <a href="/add.html" id="add-link" class="btn btn-primary btn-block btn-lg">
+          <svg class="i"><use href="/icons.svg#plus"/></svg><span data-i18n="add_place">Add place</span>
+        </a>
+      </footer>
+    </aside>
+
+    <main id="map" aria-label="Map"></main>
+
+    <div class="map-controls">
+      <button id="share-btn" class="map-btn" data-i18n-title="share_location"><svg class="i"><use href="/icons.svg#share"/></svg></button>
+      <button id="locate-btn" class="map-btn" data-i18n-title="my_location"><svg class="i"><use href="/icons.svg#locate"/></svg></button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/map.js"></script>
+</body>
+</html>

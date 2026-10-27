@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Impact · RestStop</title>
+  <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="doc-page">
+  <header class="page-header">
+    <div class="page-header-inner">
+      <a href="/" class="text-btn"><svg class="i"><use href="/icons.svg#arrow-left"/></svg><span data-i18n="back">Back to map</span></a>
+      <a href="/" class="logo logo-sm" aria-label="RestStop home">
+        <span class="logo-mark"><svg class="i"><use href="/icons.svg#pin"/></svg></span>
+        <strong data-i18n="app_name">RestStop</strong>
+      </a>
+      <button id="lang-toggle" class="pill-btn">हिंदी</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow" data-i18n="impact_eyebrow">Live impact</p>
+      <h1 data-i18n="impact_headline">The people who deliver our dinner deserve a place to rest.</h1>
+      <p class="lead" data-i18n="impact_lead">Delivery riders spend long hours on the road with nowhere to use a toilet, drink water or charge their phone. RestStop maps those places — built by riders, for riders.</p>
+    </section>
+
+    <section aria-labelledby="stats-title">
+      <div class="section-head">
+        <h2 id="stats-title" data-i18n="impact_title">RestStop impact</h2>
+        <span class="live-dot" data-i18n="live">Live</span>
+      </div>
+      <div id="stats" class="stats-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="how">
+      <h2 data-i18n="how_title">How it works</h2>
+      <ol class="how-grid">
+        <li class="how-card">
+          <span class="how-icon"><svg class="i"><use href="/icons.svg#pin"/></svg></span>
+          <h3 data-i18n="how1_t">Find</h3>
+          <p data-i18n="how1_d">Riders see the nearest toilet, water, charging point or shade — filtered for what they need right now.</p>
+        </li>
+        <li class="how-card">
+          <span class="how-icon"><svg class="i"><use href="/icons.svg#check"/></svg></span>
+          <h3 data-i18n="how2_t">Verify</h3>
+          <p data-i18n="how2_d">Every visit is a chance to confirm a place still works, so the map stays trustworthy.</p>
+        </li>
+        <li class="how-card">
+          <span class="how-icon"><svg class="i"><use href="/icons.svg#store"/></svg></span>
+          <h3 data-i18n="how3_t">Welcome</h3>
+          <p data-i18n="how3_d">Shops sign up as rider-friendly and open their doors — a small act that changes a rider's day.</p>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
