@@ -10,6 +10,7 @@ Toilets, drinking water, charging points and shade for delivery riders.
 [![Flask](https://img.shields.io/badge/Flask-3.1-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostGIS-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 [![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?logo=leaflet&logoColor=white)](https://leafletjs.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 </div>
 
@@ -30,7 +31,9 @@ We built it for the *Hack the Unseen* hackathon, which asked for problems that h
 - [Project structure](#project-structure)
 - [What's next](#whats-next)
 - [Known limitations](#known-limitations)
+- [Team](#team)
 - [Credits](#credits)
+- [License](#license)
 
 ## Why we built this
 
@@ -234,6 +237,14 @@ reststop/
 - A rider's ID lives in their browser, so clearing site data creates a new one. A production version would need proper login.
 - Voice search only works in Chrome.
 
+## Team
+
+RestStop was built by Ansh, Mishika, Soumya and Vrinda.
+
 ## Credits
 
 Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, available under the [Open Database License](https://opendatacommons.org/licenses/odbl/). Location search by [Photon](https://photon.komoot.io/) and [Nominatim](https://nominatim.org/). Maps by [Leaflet](https://leafletjs.com/), backend by [Supabase](https://supabase.com/). Fonts are [Inter](https://rsms.me/inter/) and [Noto Sans Devanagari](https://fonts.google.com/noto/specimen/Noto+Sans+Devanagari).
+
+## License
+
+The code is released under the [MIT License](LICENSE). Data imported from OpenStreetMap remains under the Open Database License.
