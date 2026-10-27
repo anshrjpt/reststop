@@ -10,6 +10,8 @@ Only amenities that OSM actually tags are marked — riders verify the rest.
 """
 
 import argparse
+import json
+import os
 import sys
 import time
 
@@ -17,6 +19,8 @@ import requests
 
 OVERPASS_URLS = [
     "https://overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
 ]
 HEADERS = {"User-Agent": "RestStop-hackathon-seed/1.0"}
@@ -110,13 +114,23 @@ def main():
     ap.add_argument("--lng", type=float, required=True)
     ap.add_argument("--radius", type=int, default=5000, help="metres (default 5000, max 20000)")
     ap.add_argument("--dry-run", action="store_true", help="print counts, write nothing")
+    ap.add_argument("--cache", metavar="FILE", help="save downloaded OSM data here, and reuse it if it exists")
     args = ap.parse_args()
 
     if not 100 <= args.radius <= 20000:
         raise SystemExit("--radius must be between 100 and 20000 metres")
 
-    print(f"Fetching OSM data within {args.radius} m of {args.lat}, {args.lng} ...")
-    elements = fetch(build_query(args.lat, args.lng, args.radius))
+    if args.cache and os.path.exists(args.cache):
+        print(f"Using cached OSM data from {args.cache}")
+        with open(args.cache) as f:
+            elements = json.load(f)
+    else:
+        print(f"Fetching OSM data within {args.radius} m of {args.lat}, {args.lng} ...")
+        elements = fetch(build_query(args.lat, args.lng, args.radius))
+        if args.cache:
+            with open(args.cache, "w") as f:
+                json.dump(elements, f)
+            print(f"  saved to {args.cache}")
     places = [p for p in (to_place(el) for el in elements) if p]
 
     print(f"  {len(elements)} OSM elements → {len(places)} usable places")

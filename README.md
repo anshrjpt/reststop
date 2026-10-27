@@ -126,11 +126,14 @@ cp .env.example .env               # then fill in your Supabase values
 Import public toilets and water points from OpenStreetMap around any location:
 
 ```bash
-python seed_osm.py --lat 19.0760 --lng 72.8777 --radius 5000 --dry-run   # preview
-python seed_osm.py --lat 19.0760 --lng 72.8777 --radius 5000             # import
+# Example: 8 km around Connaught Place, New Delhi
+python seed_osm.py --lat 28.6315 --lng 77.2167 --radius 8000 --dry-run                          # preview
+python seed_osm.py --lat 28.6315 --lng 77.2167 --radius 8000 --cache osm_cache_delhi.json      # import
 ```
 
-To make the map open on your area, set `DEFAULT_CENTER` at the top of [`static/js/common.js`](static/js/common.js).
+The public OpenStreetMap servers are often busy. The script retries across several mirrors, and `--cache` saves the download so a re-run doesn't fetch it again. Re-running is safe: existing places are updated, not duplicated.
+
+The map opens on New Delhi by default. To change the area, set `DEFAULT_CENTER` at the top of [`static/js/common.js`](static/js/common.js).
 
 ### 4. Run
 

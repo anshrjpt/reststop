@@ -3,7 +3,7 @@
 const RS = (() => {
   // Map starts here until the rider's location is known.
   // Change to your hackathon venue for the demo.
-  const DEFAULT_CENTER = [19.076, 72.8777]; // Mumbai
+  const DEFAULT_CENTER = [28.6315, 77.2167]; // Connaught Place, New Delhi
   const DEFAULT_ZOOM = 14;
 
   const STRINGS = {
