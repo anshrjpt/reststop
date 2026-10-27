@@ -111,8 +111,8 @@ It's seeded with real public toilets and water points from OpenStreetMap, so it'
 ### 2. Install
 
 ```bash
-git clone <repo-url>
-cd "LUMINA HACKATHON"
+git clone https://github.com/anshrjpt/reststop.git
+cd reststop
 
 python3.12 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
