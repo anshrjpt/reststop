@@ -1,7 +1,7 @@
 // Service worker: makes RestStop installable and opens the app shell offline.
 // Network-first for pages/assets (so updates show immediately), never caches the API.
 
-const CACHE = "reststop-v2";
+const CACHE = "reststop-v3";
 const SHELL = [
   "/",
   "/add.html",

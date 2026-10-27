@@ -498,8 +498,11 @@ img { max-width: 100%; }
 .verified .i { width: 13px; height: 13px; }
 .place-dist { font-size: 13px; font-weight: 600; color: var(--gray-500); font-variant-numeric: tabular-nums; }
 
-.empty { padding: 32px 24px; text-align: center; color: var(--gray-500); }
+.empty { padding: 20px 20px 8px; text-align: center; color: var(--gray-500); }
 .empty-icon { width: 32px; height: 32px; margin-bottom: 8px; color: var(--gray-300); }
+.empty-title { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+.empty-text { margin: 6px auto 0; max-width: 320px; font-size: 14px; line-height: 1.5; }
+.empty-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
 
 /* Place detail */
 #detail-back { margin: 0 0 8px -4px; }

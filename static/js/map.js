@@ -39,6 +39,8 @@
   let pendingFocus = focusId;
   let loadSeq = 0;
   let loading = false;
+  let lastNearest = null; // nearest matching place when the visible area is empty
+  let revealIfEmpty = false; // open the sheet if the next load comes back empty
   let searchLatLng = null; // set while a searched location is shown
   let searchMarker = null;
   let searchBox = null;
@@ -143,6 +145,7 @@
     const summary = document.getElementById("results-summary");
     if (map.getZoom() < MIN_ZOOM_FOR_PLACES) summary.textContent = RS.t("zoom_in");
     else if (loading && !placesById.size) summary.textContent = RS.t("loading");
+    else if (!placesById.size) summary.textContent = RS.t("none_here");
     else summary.textContent = RS.t("places_found", { n: placesById.size });
   }
 
@@ -197,8 +200,32 @@
       list.appendChild(li);
     });
 
-    document.getElementById("list-empty").hidden = items.length > 0 || map.getZoom() < MIN_ZOOM_FOR_PLACES;
+    renderEmpty(items.length === 0 && map.getZoom() >= MIN_ZOOM_FOR_PLACES && !loading);
     updateSummary();
+  }
+
+  function renderEmpty(show) {
+    const box = document.getElementById("list-empty");
+    box.hidden = !show;
+    if (!show) return;
+    box.replaceChildren();
+    box.appendChild(icon("pin", "empty-icon"));
+    box.appendChild(el("p", "empty-title", RS.t("none_here")));
+    box.appendChild(el("p", "empty-text", RS.t("no_places_here")));
+
+    const actions = el("div", "empty-actions");
+    if (lastNearest) {
+      const n = lastNearest;
+      actions.appendChild(button("btn btn-primary btn-block", "nav",
+        RS.t("nearest_btn", { d: RS.formatDistance(n.distance_m) }), () => {
+          pendingFocus = n.id; // opened once places around it load
+          map.setView([n.lat, n.lng], 16);
+        }));
+    }
+    actions.appendChild(button("btn btn-ghost btn-block", "plus", RS.t("add_first"), () => {
+      location.href = addPageUrl(searchLatLng || userLatLng || map.getCenter());
+    }));
+    box.appendChild(actions);
   }
 
   // ---------------- Loading ----------------
@@ -231,8 +258,12 @@
       if (seq !== loadSeq) return; // a newer request finished first
       placesById.clear();
       data.places.forEach((p) => placesById.set(p.id, p));
+      lastNearest = data.nearest || null;
+      loading = false;
       renderMarkers();
       renderList();
+      if (revealIfEmpty && !data.places.length && !openPlaceId) setExpanded(true);
+      revealIfEmpty = false;
       if (pendingFocus) {
         const id = pendingFocus;
         pendingFocus = null;
@@ -443,7 +474,10 @@
           } else {
             userMarker.setLatLng(userLatLng);
           }
-          if (recenter) map.setView(userLatLng, Math.max(map.getZoom(), 15));
+          if (recenter) {
+            revealIfEmpty = true; // explain an empty area instead of showing a blank map
+            map.setView(userLatLng, Math.max(map.getZoom(), 15));
+          }
           renderList();
           resolve(userLatLng);
         },

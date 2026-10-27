@@ -31,6 +31,7 @@ ALLOWED_PHOTO_TYPES = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "w
 
 CATEGORIES = {"shop", "fuel", "public", "restaurant", "other"}
 AMENITIES = ["has_toilet", "has_water", "has_charging", "has_shade", "women_safe"]
+NEAREST_SEARCH_M = 50000  # how far to look for "nearest place" when the area is empty
 VERIFY_STATUSES = {"works", "closed", "denied"}
 REPORT_REASONS = {"dirty", "unsafe", "wrong_location", "denied_access", "other"}
 
@@ -220,16 +221,32 @@ def list_places():
     wanted = [col for key, col in FILTERS.items() if truthy(request.args.get(key))]
     open_now = truthy(request.args.get("open_now"))
 
-    places = []
-    for p in rows:
+    def matches(p) -> bool:
         if any(not p.get(col) for col in wanted):
-            continue
+            return False
         p["open_status"] = open_status(p, now_hhmm)
-        if open_now and p["open_status"] != "open":
-            continue
-        places.append(p)
+        return not (open_now and p["open_status"] != "open")
 
-    return jsonify(places=places, count=len(places))
+    places = [p for p in rows if matches(p)]
+
+    # Nothing here: point the rider at the nearest matching place instead of an empty map.
+    nearest = None
+    if not places:
+        wider = (
+            db()
+            .rpc(
+                "nearby_places",
+                {"user_lat": lat, "user_lng": lng, "radius_m": NEAREST_SEARCH_M, "max_results": 300},
+            )
+            .execute()
+            .data
+            or []
+        )
+        hit = next((p for p in wider if matches(p)), None)
+        if hit:
+            nearest = {k: hit[k] for k in ("id", "name", "lat", "lng", "distance_m")}
+
+    return jsonify(places=places, count=len(places), nearest=nearest)
 
 
 @app.get("/api/places/<int:place_id>")
