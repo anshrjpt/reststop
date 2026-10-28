@@ -12,6 +12,8 @@ Toilets, drinking water, charging points and shade for delivery riders.
 [![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?logo=leaflet&logoColor=white)](https://leafletjs.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+**[Open the live app](https://reststop.onrender.com)**
+
 </div>
 
 RestStop is a map of places where delivery riders can use a toilet, refill water, charge their phone or rest in the shade. Riders add the places, confirm they still work and report the ones that don't. Shops can mark themselves as rider-friendly. The app works in Hindi and English and runs in any phone browser.
