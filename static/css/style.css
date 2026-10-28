@@ -119,13 +119,6 @@ img { max-width: 100%; }
 .logo-mark .i { width: 20px; height: 20px; }
 .logo-text { display: flex; flex-direction: column; min-width: 0; }
 .logo-text strong { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
-.logo-text small {
-  font-size: 12px;
-  color: var(--gray-500);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .logo-sm .logo-mark { width: 32px; height: 32px; border-radius: 9px; }
 .logo-sm .logo-mark .i { width: 17px; height: 17px; }
 .logo-sm strong { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }

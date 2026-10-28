@@ -9,7 +9,6 @@ const RS = (() => {
   const STRINGS = {
     en: {
       app_name: "RestStop",
-      tagline: "Toilets, water & rest for riders",
       f_toilet: "Toilet",
       f_water: "Water",
       f_charging: "Charging",
@@ -136,7 +135,6 @@ const RS = (() => {
     },
     hi: {
       app_name: "रेस्टस्टॉप",
-      tagline: "राइडर्स के लिए शौचालय, पानी और आराम",
       f_toilet: "शौचालय",
       f_water: "पानी",
       f_charging: "चार्जिंग",
