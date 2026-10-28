@@ -76,15 +76,6 @@ The map starts with about 1,200 public toilets and drinking water points across 
 
 ## How it works
 
-```mermaid
-flowchart LR
-    A["Phone browser<br/>HTML, CSS, JavaScript, Leaflet"] -- "/api/*" --> B["Flask API"]
-    B -- "supabase-py" --> C[("Supabase<br/>Postgres + PostGIS<br/>Storage, Realtime")]
-    C -. "new places, live" .-> A
-    B -- "location search" --> D["Photon / Nominatim"]
-    E["OpenStreetMap<br/>Overpass API"] -- "seed_osm.py" --> C
-```
-
 The browser sends the rider's location to the Flask API. Flask calls a PostGIS function, `nearby_places`, which returns the places within the visible area, sorted by distance and with their verification counts. Adding, verifying and reporting all go through Flask, which validates the input, checks photo type and size, and rate-limits each rider. Supabase Realtime pushes newly added places to every open map.
 
 Location search goes through Flask to Photon, an OpenStreetMap-based geocoder that supports search as you type. If Photon fails or finds nothing, Flask falls back to Nominatim, restricted to India. Results are cached on the server.
