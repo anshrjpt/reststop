@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
 from supabase import Client, create_client
 from werkzeug.exceptions import HTTPException
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv()
 
@@ -49,6 +50,8 @@ TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$")
 USER_ID_RE = re.compile(r"^[A-Za-z0-9-]{8,64}$")
 
 app = Flask(__name__, static_folder="static", static_url_path="")
+# Behind a hosting proxy (Render, tunnels), read the visitor's real IP for rate limits.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 # Slightly above the photo limit so form fields fit too.
 app.config["MAX_CONTENT_LENGTH"] = MAX_PHOTO_BYTES + 512 * 1024
 

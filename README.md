@@ -27,6 +27,7 @@ We built it for the *Hack the Unseen* hackathon, which asked for problems that h
 - [Screenshots](#screenshots)
 - [How it works](#how-it-works)
 - [Running it locally](#running-it-locally)
+- [Deploying](#deploying)
 - [API](#api)
 - [Project structure](#project-structure)
 - [What's next](#whats-next)
@@ -173,6 +174,12 @@ cloudflared tunnel --url http://localhost:8000
 
 Open the `https://…trycloudflare.com` address it prints on your phone. In Chrome, choose Add to Home screen from the menu to install it like an app.
 
+## Deploying
+
+The repo includes a [`render.yaml`](render.yaml) for [Render](https://render.com). In the Render dashboard, choose New, then Blueprint, and select this repository. Render asks for `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` and `SUPABASE_ANON_KEY`, then builds and starts the app with gunicorn. Every push to `main` redeploys it.
+
+On Render's free plan the app sleeps after 15 minutes without traffic, and the next visit takes up to a minute to wake it. All data lives in Supabase, so nothing is lost when it sleeps or restarts.
+
 ## API
 
 Every endpoint returns JSON. Errors come back as `{ "error": "..." }` with a 4xx or 5xx status code.
@@ -198,6 +205,7 @@ reststop/
 ├── schema.sql           Tables, PostGIS functions, security policies, storage bucket
 ├── seed_osm.py          OpenStreetMap importer
 ├── requirements.txt
+├── render.yaml          Render deployment config
 ├── .env.example
 ├── docs/
 │   ├── TEAM.md          Team workflow, demo script, troubleshooting
