@@ -18,6 +18,8 @@ Toilets, drinking water, charging points and shade for delivery riders.
 
 RestStop is a map of places where delivery riders can use a toilet, refill water, charge their phone or rest in the shade. Riders add the places, confirm they still work and report the ones that don't. Shops can mark themselves as rider-friendly. The app works in Hindi and English and runs in any phone browser.
 
+**Try it now at [reststop.onrender.com](https://reststop.onrender.com)**, on a phone or a laptop. Nothing to install and no sign-up.
+
 We built it for the *Hack the Unseen* hackathon, which asked for problems that hide in plain sight.
 
 ![RestStop on desktop, showing places around Connaught Place, New Delhi](docs/screenshots/desktop.png)
@@ -46,7 +48,7 @@ Most of us order food or parcels several times a week and never think about this
 
 ## What it does
 
-**Find a place.** The map shows toilets, water points, charging points and shaded spots near the rider, nearest first. Filters narrow the results to what's needed right now, including women-safe places, rider-friendly shops and places open at the current time. Riders can search for any area, landmark or address, or use voice search in Hindi or English. A Navigate button opens Google Maps with two-wheeler directions. If nothing is nearby, the app says so and points to the nearest matching place instead of showing an empty map.
+**Find a place.** The map shows toilets, water points, charging points and shaded spots near the rider, nearest first. Riders can pick several facilities at once: tapping Toilet and Water shows every toilet and every water point together. Women-safe, Rider-friendly and Open now then narrow those results. Riders can search for any area, landmark or address, or use voice search in Hindi or English. A Navigate button opens Google Maps with two-wheeler directions. If nothing is nearby, the app says so and points to the nearest matching place instead of showing an empty map.
 
 **Keep it accurate.** Each place shows how many riders have confirmed it still works and when it was last checked. Riders can mark a place as closed or report a problem, such as dirty, unsafe, wrong location or not allowed in. Places that more riders report as closed than working are faded on the map.
 
@@ -167,6 +169,8 @@ Then open http://localhost:8000.
 
 ### 5. Try it on a phone
 
+To use the app on a phone without running anything, open [reststop.onrender.com](https://reststop.onrender.com). To test your own local copy on a phone, read on.
+
 Phones only share their location with HTTPS sites, so a plain local address like `http://192.168.1.5:8000` won't be able to find the rider. The simplest workaround is a Cloudflare tunnel:
 
 ```bash
@@ -180,6 +184,8 @@ Open the `https://…trycloudflare.com` address it prints on your phone. In Chro
 
 The repo includes a [`render.yaml`](render.yaml) for [Render](https://render.com). In the Render dashboard, choose New, then Blueprint, and select this repository. Render asks for `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` and `SUPABASE_ANON_KEY`, then builds and starts the app with gunicorn. Every push to `main` redeploys it.
 
+The live app runs at [reststop.onrender.com](https://reststop.onrender.com).
+
 On Render's free plan the app sleeps after 15 minutes without traffic, and the next visit takes up to a minute to wake it. All data lives in Supabase, so nothing is lost when it sleeps or restarts.
 
 ## API
@@ -188,7 +194,7 @@ Every endpoint returns JSON. Errors come back as `{ "error": "..." }` with a 4xx
 
 | Method | Endpoint | What it does |
 |---|---|---|
-| `GET` | `/api/places` | Places within `radius` metres (100 to 25,000) of `lat`/`lng`, nearest first. Optional filters, each set to `1`: `toilet`, `water`, `charging`, `shade`, `women_safe`, `rider_friendly`, `open_now` (used with `time=HH:MM`). When nothing matches, the response also includes the `nearest` matching place within 50 km. |
+| `GET` | `/api/places` | Places within `radius` metres (100 to 25,000) of `lat`/`lng`, nearest first. Optional filters, each set to `1`. Facilities (`toilet`, `water`, `charging`, `shade`) combine with OR, so `toilet=1&water=1` returns places with either. `women_safe`, `rider_friendly` and `open_now` (used with `time=HH:MM`) must all match. When nothing matches, the response also includes the `nearest` matching place within 50 km. |
 | `GET` | `/api/places/<id>` | One place, with its verification counts |
 | `POST` | `/api/places` | Adds a place from a multipart form: `name`, `lat`, `lng`, `category`, the facility flags, optional `open_time` and `close_time`, and an optional `photo` (JPEG, PNG or WebP, up to 5 MB) |
 | `POST` | `/api/places/<id>/verify` | `{ "user_id", "status" }`, where status is `works`, `closed` or `denied`. One vote per rider per place; voting again replaces the earlier vote. |

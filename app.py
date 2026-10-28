@@ -36,12 +36,16 @@ NEAREST_SEARCH_M = 50000  # how far to look for "nearest place" when the area is
 VERIFY_STATUSES = {"works", "closed", "denied"}
 REPORT_REASONS = {"dirty", "unsafe", "wrong_location", "denied_access", "other"}
 
-# Query-string filter name → column
-FILTERS = {
+# Query-string filter name → column.
+# Facilities widen the results (toilet + water = places with either);
+# qualifiers narrow them (toilet + women-safe = women-safe toilets).
+FACILITY_FILTERS = {
     "toilet": "has_toilet",
     "water": "has_water",
     "charging": "has_charging",
     "shade": "has_shade",
+}
+QUALIFIER_FILTERS = {
     "women_safe": "women_safe",
     "rider_friendly": "rider_friendly",
 }
@@ -221,11 +225,14 @@ def list_places():
         or []
     )
 
-    wanted = [col for key, col in FILTERS.items() if truthy(request.args.get(key))]
+    facilities = [col for key, col in FACILITY_FILTERS.items() if truthy(request.args.get(key))]
+    qualifiers = [col for key, col in QUALIFIER_FILTERS.items() if truthy(request.args.get(key))]
     open_now = truthy(request.args.get("open_now"))
 
     def matches(p) -> bool:
-        if any(not p.get(col) for col in wanted):
+        if facilities and not any(p.get(col) for col in facilities):
+            return False
+        if any(not p.get(col) for col in qualifiers):
             return False
         p["open_status"] = open_status(p, now_hhmm)
         return not (open_now and p["open_status"] != "open")

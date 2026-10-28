@@ -6,10 +6,10 @@
   const MAX_LIST_ITEMS = 60;
 
   const AMENITIES = [
-    ["has_toilet", "wc", "f_toilet"],
-    ["has_water", "drop", "f_water"],
-    ["has_charging", "zap", "f_charging"],
-    ["has_shade", "tree", "f_shade"],
+    ["has_toilet", "wc", "f_toilet", "toilet"],
+    ["has_water", "drop", "f_water", "water"],
+    ["has_charging", "zap", "f_charging", "charging"],
+    ["has_shade", "tree", "f_shade", "shade"],
     ["women_safe", "shield", "f_women_safe"],
   ];
 
@@ -77,6 +77,8 @@
   // ---------------- Place helpers ----------------
 
   function primaryIcon(p) {
+    // Prefer a facility the rider is filtering for, so a water search shows water drops.
+    for (const [col, name, , filter] of AMENITIES) if (p[col] && filters.has(filter)) return name;
     for (const [col, name] of AMENITIES) if (p[col]) return name;
     return "pin";
   }
